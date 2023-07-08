@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8598813022587723840}
   - component: {fileID: 8598813022587723841}
   - component: {fileID: 558887656085341240}
+  - component: {fileID: 8355514723614208696}
   m_Layer: 0
   m_Name: Hitbox
   m_TagString: Untagged
@@ -68,10 +69,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8598813022587723843}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 658249b5f3522d04398d4c9be527bb25, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d0a7371e85606a4bbd8a76672e40c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _damageAmount: 20
+--- !u!114 &8355514723614208696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8598813022587723843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e1c450f570d9b43977734c6a5d96b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _force: 20
+  _upwardTendency: 0.35
+  _rigidbody: {fileID: 8598813023811867142}
 --- !u!1 &8598813022783417430
 GameObject:
   m_ObjectHideFlags: 0
