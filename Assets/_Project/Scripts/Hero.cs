@@ -100,7 +100,8 @@ public class Hero : MonoBehaviour
 
     public void DodgeBasicAttack()
     {
-        _jumpInput = true;
+        if (IsOnGround())
+            TryJump();
     }
 
     public void MoveLeft()
@@ -118,6 +119,11 @@ public class Hero : MonoBehaviour
         // Debug.Log("Cancel Movement");
 
         _moveInput = 0;
+    }
+
+    public void TryJump()
+    {
+        _jumpInput = true;
     }
 
     private void OnDeath()
