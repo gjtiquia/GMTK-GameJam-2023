@@ -15,6 +15,9 @@ public class Hero : MonoBehaviour
     [SerializeField] private float _acceleration;
     [SerializeField] private float _destinationRadius;
 
+    [Header("Attack Boss Settings")]
+    [SerializeField] private Transform _attackBossDestination;
+
     [Header("Basic Attack Settings")]
     [SerializeField] private Transform _basicAttackAnticipateDestination;
 
@@ -30,15 +33,19 @@ public class Hero : MonoBehaviour
     private int _moveInput = 0; // 1 => Right, -1 => Left
     private bool _jumpInput = false;
     private IEnumerator _movementCoroutine = null;
+    private IEnumerator _hitBossCoroutine = null;
 
     private void Awake()
     {
         _gravityScale = _rigidbody.gravityScale;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         _health.OnDeathCallback += OnDeath;
+
+        yield return new WaitForSeconds(2);
+        TryHitBoss();
     }
 
     private void OnDestroy()
@@ -77,6 +84,7 @@ public class Hero : MonoBehaviour
     public void AnticipateBasicAttack()
     {
         if (IsDead()) return;
+        StopHitBoss();
 
         Vector3 anticipateDestination = _basicAttackAnticipateDestination.position;
         MoveToDestination(anticipateDestination);
@@ -85,7 +93,10 @@ public class Hero : MonoBehaviour
     public void DodgeBasicAttack()
     {
         if (IsOnGround())
+        {
+            StopHitBoss();
             TryJump();
+        }
     }
 
     public void CancelMovement()
@@ -95,11 +106,32 @@ public class Hero : MonoBehaviour
         _moveInput = 0;
     }
 
-    // TODO
-    // private IEnumerator TryHitBoss()
-    // {   
+    private void TryHitBoss()
+    {
+        StopHitBoss();
 
-    // }
+        _hitBossCoroutine = TryHitBossCoroutine();
+        StartCoroutine(_hitBossCoroutine);
+    }
+
+    private IEnumerator TryHitBossCoroutine()
+    {
+        yield return MoveToDestinationCoroutine(_attackBossDestination.position);
+
+        const float ATTACK_INTERVAL = 2f;
+        WaitForSeconds waitForSeconds = new WaitForSeconds(ATTACK_INTERVAL);
+        while (true)
+        {
+            Debug.Log("Hit!");
+            yield return waitForSeconds;
+        }
+    }
+
+    private void StopHitBoss()
+    {
+        if (_hitBossCoroutine != null)
+            StopCoroutine(_hitBossCoroutine);
+    }
 
     private void MoveToDestination(Vector3 destination)
     {

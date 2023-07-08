@@ -2437,9 +2437,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _jumpForce: 12
   _fallGravityMultiplier: 2.5
-  _topSpeed: 5
+  _topSpeed: 7
   _acceleration: 5
   _destinationRadius: 1
+  _attackBossDestination: {fileID: 1763147890}
   _basicAttackAnticipateDestination: {fileID: 621957920}
   _boxExtents: {x: 0.71, y: 0.16}
   _boxOffset: {x: 0, y: -0.64}
