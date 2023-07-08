@@ -36,6 +36,7 @@ public class Hero : MonoBehaviour
     [Header("References")]
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Health _health;
+    [SerializeField] private Health _bossHealth;
     [SerializeField] private GameObject _heroDiedPopup;
 
     private float _gravityScale;
@@ -226,7 +227,7 @@ public class Hero : MonoBehaviour
         yield return MoveToDestinationCoroutine(_attackBossDestination.position);
 
         WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
-        while (true)
+        while (!_bossHealth.IsDead())
         {
             ResetIdleTimer();
             SwingSword();

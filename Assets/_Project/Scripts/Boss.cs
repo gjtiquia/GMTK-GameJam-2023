@@ -14,12 +14,24 @@ public class Boss : MonoBehaviour
     [SerializeField] private bool _disableAttack;
 
     [Header("References")]
+    [SerializeField] private Health _health;
+    [SerializeField] private GameObject _bossDiedPopup;
     [SerializeField] private Transform _firePosition;
     [SerializeField] private Transform _superFirePosition;
     [SerializeField] private GameObject _projectilePrefab;
     [SerializeField] private GameObject _superAttackInstance;
 
     private Sequence _superSequence;
+
+    private void Awake()
+    {
+        _bossDiedPopup.SetActive(false);
+    }
+
+    private void Start()
+    {
+        _health.OnDeathCallback += () => _bossDiedPopup.SetActive(true);
+    }
 
     public void Fire()
     {

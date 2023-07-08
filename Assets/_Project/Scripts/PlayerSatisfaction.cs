@@ -43,6 +43,7 @@ public class PlayerSatisfaction : MonoBehaviour
     [SerializeField] private Hero _hero;
     [SerializeField] private Health _bossHealth;
     [SerializeField] private Image _satisfactionBar;
+    [SerializeField] private TextMeshProUGUI _satisfactionText;
     [SerializeField] private GameObject _penaltyUI;
     [SerializeField] private TextMeshProUGUI _penaltyText;
     [SerializeField] private GameObject _bonusUI;
@@ -147,6 +148,7 @@ public class PlayerSatisfaction : MonoBehaviour
     {
         float normalizedSatisfaction = (float)_currentPlayerSatisfaction / _maxPlayerSatisfaction;
         _satisfactionBar.fillAmount = normalizedSatisfaction;
+        _satisfactionText.text = $"Player Satisfaction: {Mathf.RoundToInt(normalizedSatisfaction * 100)}%";
     }
 
     private void ShowPenaltyUI(string text)
