@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Boss : MonoBehaviour
 {
@@ -11,24 +12,6 @@ public class Boss : MonoBehaviour
     [SerializeField] private Transform _firePosition;
     [SerializeField] private GameObject _projectilePrefab;
 
-    private void OnValidate()
-    {
-        Utilities.IsPropertyNull(_projectilePrefab);
-        Utilities.IsPropertyNull(_firePosition);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void Fire()
     {
         GameObject projectileInstance = Instantiate(_projectilePrefab, _firePosition.position, Quaternion.identity);
@@ -37,5 +20,8 @@ public class Boss : MonoBehaviour
             rigidbody.velocity = _fireVelocity;
         }
         else Debug.LogError("Projectile does not have a rigidbody!");
+
+        // TODO : Refactor with ObjectPool
+        // DOVirtual.DelayedCall(5, () => Destroy(projectileInstance));
     }
 }
