@@ -35,6 +35,11 @@ public class Health : MonoBehaviour
         return (float)_currentHP / (float)_maxHP;
     }
 
+    public bool IsDead()
+    {
+        return _currentHP <= 0;
+    }
+
     private void Awake()
     {
         _currentHP = _maxHP;
