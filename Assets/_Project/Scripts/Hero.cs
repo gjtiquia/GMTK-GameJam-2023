@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class Hero : MonoBehaviour
 {
+    public Health Health => _health;
+
     [Header("Jump Settings")]
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _fallGravityMultiplier;

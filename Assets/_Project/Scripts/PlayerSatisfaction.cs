@@ -98,6 +98,8 @@ public class PlayerSatisfaction : MonoBehaviour
         BossAction previousAction = _actionStack.Peek();
         _actionStack.Push(BossAction.SuperAttack);
 
+        if (_hero.Health.IsDead()) return;
+
         if (previousAction != BossAction.SuperAnticipation && !_hero.CanDodgeSuperAttack())
         {
             _currentPlayerSatisfaction -= _noSuperAnticipationPenalty;
@@ -131,6 +133,8 @@ public class PlayerSatisfaction : MonoBehaviour
 
         BossAction previousAction = _actionStack.Peek();
         _actionStack.Push(BossAction.BasicAttack);
+
+        if (_hero.Health.IsDead()) return;
 
         if (previousAction == BossAction.BasicAnticipation && _hero.CanDodgeBasicAttack())
         {
