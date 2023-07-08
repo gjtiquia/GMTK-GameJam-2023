@@ -6,6 +6,11 @@ using DG.Tweening;
 
 public class Hero : MonoBehaviour
 {
+    [Header("Jump Settings")]
+    [SerializeField] private float _jumpForce;
+    [SerializeField] private float _fallGravityMultiplier;
+
+    [Header("Pathfinding Settings")]
     [SerializeField] private float _topSpeed;
     [SerializeField] private float _acceleration;
     [SerializeField] private float _destinationRadius;
@@ -13,12 +18,23 @@ public class Hero : MonoBehaviour
     [Header("Basic Attack Settings")]
     [SerializeField] private Transform _basicAttackAnticipateDestination;
 
+    [Header("On Ground Hitbox Settings")]
+    [SerializeField] private Vector2 _boxExtents;
+    [SerializeField] private Vector2 _boxOffset;
+
     [Header("References")]
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Health _health;
 
+    private float _gravityScale;
     private int _moveInput = 0; // 1 => Right, -1 => Left
+    private bool _jumpInput = false;
     private IEnumerator _movementCoroutine = null;
+
+    private void Awake()
+    {
+        _gravityScale = _rigidbody.gravityScale;
+    }
 
     private void Start()
     {
@@ -32,6 +48,8 @@ public class Hero : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (IsDead()) return;
+
         // Reference: Improve Your Platformer with Forces | Examples in Unity - Dawnosaur
         // https://www.youtube.com/watch?v=KbtcEVCM7bw&ab_channel=Dawnosaur
 
@@ -43,6 +61,17 @@ public class Hero : MonoBehaviour
             float movement = velocityDiff * acceleration;
             _rigidbody.AddForce(movement * Vector2.right);
         }
+
+        if (_jumpInput && IsOnGround())
+        {
+            _rigidbody.AddForce(_jumpForce * Vector2.up, ForceMode2D.Impulse);
+            _jumpInput = false;
+        }
+
+        if (_rigidbody.velocity.y < 0)
+            _rigidbody.gravityScale = _fallGravityMultiplier * _gravityScale;
+        else
+            _rigidbody.gravityScale = _gravityScale;
     }
 
     public void AnticipateBasicAttack()
@@ -56,8 +85,6 @@ public class Hero : MonoBehaviour
 
         if (IsOnLeftOfDestination(destination))
         {
-            // Set as moving towards destination
-            // save the coroutine to cancel
             _movementCoroutine = MoveRightUntilReachDestination(destination);
             StartCoroutine(_movementCoroutine);
             return;
@@ -65,21 +92,32 @@ public class Hero : MonoBehaviour
 
         if (IsOnRightOfDestination(destination))
         {
-            // Set as moving towards destination
-            // save the coroutine to cancel
-
             _movementCoroutine = MoveLeftUntilReachDestination(destination);
             StartCoroutine(_movementCoroutine);
             return;
         }
-
-        // if is on the right of the destination
-        // move left until reach destination
     }
 
     public void DodgeBasicAttack()
     {
-        // TODO : Jump
+        _jumpInput = true;
+    }
+
+    public void MoveLeft()
+    {
+        _moveInput = -1;
+    }
+
+    public void MoveRight()
+    {
+        _moveInput = 1;
+    }
+
+    public void CancelMovement()
+    {
+        // Debug.Log("Cancel Movement");
+
+        _moveInput = 0;
     }
 
     private void OnDeath()
@@ -105,24 +143,22 @@ public class Hero : MonoBehaviour
 
     private IEnumerator MoveRightUntilReachDestination(Vector3 destination)
     {
-        while (!IsWithinRadiusOfDestination(destination))
-        {
-            _moveInput = 1;
-            yield return null;
-        }
+        MoveRight();
 
-        _moveInput = 0;
+        while (!IsWithinRadiusOfDestination(destination))
+            yield return null;
+
+        CancelMovement();
     }
 
     private IEnumerator MoveLeftUntilReachDestination(Vector3 destination)
     {
-        while (!IsWithinRadiusOfDestination(destination))
-        {
-            _moveInput = -1;
-            yield return null;
-        }
+        MoveLeft();
 
-        _moveInput = 0;
+        while (!IsWithinRadiusOfDestination(destination))
+            yield return null;
+
+        CancelMovement();
     }
 
     private bool IsDead() => _health.IsDead();
@@ -130,10 +166,22 @@ public class Hero : MonoBehaviour
     {
         return _moveInput != 0;
     }
+    private bool IsOnGround()
+    {
+        Collider2D collider = Physics2D.OverlapBox((Vector2)transform.position + _boxOffset, _boxExtents, 0);
+
+        if (collider != null && collider.tag == "Ground")
+            return true;
+
+        return false;
+    }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, _destinationRadius);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position + (Vector3)_boxOffset, _boxExtents);
     }
 }

@@ -47,7 +47,7 @@ public class Health : MonoBehaviour
 
     private void OnCurrentHPChange()
     {
-        Debug.Log($"HP: {_currentHP}/{_maxHP}");
+        // Debug.Log($"HP: {_currentHP}/{_maxHP}");
         OnNormalizedCurrentHPChangedCallback?.Invoke(GetNormalizedHP());
 
         if (_currentHP <= 0)
