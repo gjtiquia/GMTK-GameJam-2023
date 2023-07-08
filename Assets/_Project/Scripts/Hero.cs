@@ -78,40 +78,14 @@ public class Hero : MonoBehaviour
     {
         if (IsDead()) return;
 
-        Vector3 destination = _basicAttackAnticipateDestination.position;
-
-        if (_movementCoroutine != null)
-            StopCoroutine(_movementCoroutine);
-
-        if (IsOnLeftOfDestination(destination))
-        {
-            _movementCoroutine = MoveRightUntilReachDestination(destination);
-            StartCoroutine(_movementCoroutine);
-            return;
-        }
-
-        if (IsOnRightOfDestination(destination))
-        {
-            _movementCoroutine = MoveLeftUntilReachDestination(destination);
-            StartCoroutine(_movementCoroutine);
-            return;
-        }
+        Vector3 anticipateDestination = _basicAttackAnticipateDestination.position;
+        MoveToDestination(anticipateDestination);
     }
 
     public void DodgeBasicAttack()
     {
         if (IsOnGround())
             TryJump();
-    }
-
-    public void MoveLeft()
-    {
-        _moveInput = -1;
-    }
-
-    public void MoveRight()
-    {
-        _moveInput = 1;
     }
 
     public void CancelMovement()
@@ -121,15 +95,56 @@ public class Hero : MonoBehaviour
         _moveInput = 0;
     }
 
-    public void TryJump()
+    // TODO
+    // private IEnumerator TryHitBoss()
+    // {   
+
+    // }
+
+    private void MoveToDestination(Vector3 destination)
     {
-        _jumpInput = true;
+        if (_movementCoroutine != null)
+            StopCoroutine(_movementCoroutine);
+
+        _movementCoroutine = MoveToDestinationCoroutine(destination);
+        StartCoroutine(_movementCoroutine);
+    }
+
+    private IEnumerator MoveToDestinationCoroutine(Vector3 destination)
+    {
+        while (!IsWithinRadiusOfDestination(destination))
+        {
+            if (IsOnLeftOfDestination(destination))
+                MoveRight();
+
+            if (IsOnRightOfDestination(destination))
+                MoveLeft();
+
+            yield return null;
+        }
+
+        CancelMovement();
     }
 
     private void OnDeath()
     {
         Debug.Log("Hero Died!");
         _rigidbody.freezeRotation = false;
+    }
+
+    private void TryJump()
+    {
+        _jumpInput = true;
+    }
+
+    private void MoveLeft()
+    {
+        _moveInput = -1;
+    }
+
+    private void MoveRight()
+    {
+        _moveInput = 1;
     }
 
     private bool IsOnLeftOfDestination(Vector3 destination)
@@ -144,34 +159,22 @@ public class Hero : MonoBehaviour
 
     private bool IsWithinRadiusOfDestination(Vector3 destination)
     {
-        return Math.Abs(destination.x - transform.position.x) <= _destinationRadius;
+        bool withinXDistance = Math.Abs(destination.x - transform.position.x) <= _destinationRadius;
+        bool withinYDistance = Math.Abs(destination.y - transform.position.y) <= _destinationRadius;
+
+        return withinXDistance && withinYDistance;
     }
 
-    private IEnumerator MoveRightUntilReachDestination(Vector3 destination)
+    private bool IsDead()
     {
-        MoveRight();
-
-        while (!IsWithinRadiusOfDestination(destination))
-            yield return null;
-
-        CancelMovement();
+        return _health.IsDead();
     }
 
-    private IEnumerator MoveLeftUntilReachDestination(Vector3 destination)
-    {
-        MoveLeft();
-
-        while (!IsWithinRadiusOfDestination(destination))
-            yield return null;
-
-        CancelMovement();
-    }
-
-    private bool IsDead() => _health.IsDead();
     private bool IsMoving()
     {
         return _moveInput != 0;
     }
+
     private bool IsOnGround()
     {
         Collider2D collider = Physics2D.OverlapBox((Vector2)transform.position + _boxOffset, _boxExtents, 0);
