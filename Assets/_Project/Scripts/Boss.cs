@@ -7,13 +7,19 @@ public class Boss : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private Vector2 _fireVelocity;
+    [SerializeField] private float _superAttackPowerupDuration;
+    [SerializeField] private float _superAttackDuration;
 
     [Header("Debug")]
     [SerializeField] private bool _disableAttack;
 
     [Header("References")]
     [SerializeField] private Transform _firePosition;
+    [SerializeField] private Transform _superFirePosition;
     [SerializeField] private GameObject _projectilePrefab;
+    [SerializeField] private GameObject _superAttackInstance;
+
+    private Sequence _superSequence;
 
     public void Fire()
     {
@@ -29,5 +35,23 @@ public class Boss : MonoBehaviour
 
         // TODO : Refactor with ObjectPool
         // DOVirtual.DelayedCall(5, () => Destroy(projectileInstance));
+    }
+
+    public void Super()
+    {
+        if (_disableAttack)
+            return;
+
+        _superAttackInstance.SetActive(false);
+
+        if (_superSequence != null && _superSequence.IsPlaying())
+            _superSequence.Kill();
+
+        _superSequence = DOTween.Sequence();
+        _superSequence
+            .AppendInterval(_superAttackPowerupDuration) // TODO : Animation from single line to huge lazer beam
+            .AppendCallback(() => _superAttackInstance.SetActive(true))
+            .AppendInterval(_superAttackDuration)
+            .AppendCallback(() => _superAttackInstance.SetActive(false));
     }
 }

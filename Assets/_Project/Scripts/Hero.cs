@@ -26,6 +26,9 @@ public class Hero : MonoBehaviour
     [SerializeField] private float _dodgeDelay;
     [SerializeField] private Transform _basicAttackAnticipateDestination;
 
+    [Header("Super Attack Settings")]
+    [SerializeField] private Transform _superAttackAnticipateDestination;
+
     [Header("On Ground Hitbox Settings")]
     [SerializeField] private Vector2 _boxExtents;
     [SerializeField] private Vector2 _boxOffset;
@@ -47,12 +50,9 @@ public class Hero : MonoBehaviour
         _gravityScale = _rigidbody.gravityScale;
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
         _health.OnDeathCallback += OnDeath;
-
-        yield return new WaitForSeconds(2);
-        TryHitBoss();
     }
 
     private void OnDestroy()
@@ -123,29 +123,36 @@ public class Hero : MonoBehaviour
 
     public void AnticipateBasicAttack()
     {
-        if (IsDead()) return;
-
-        StopHitBoss();
-        ResetIdleTimer();
-
         Vector3 anticipateDestination = _basicAttackAnticipateDestination.position;
-        MoveToDestination(anticipateDestination);
+        AnticipateAttack(anticipateDestination);
+    }
+
+    public void AnticipateSuperAttack()
+    {
+        Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
+        AnticipateAttack(anticipateDestination);
     }
 
     public void DodgeBasicAttack()
     {
         if (IsDead()) return;
 
-        DOVirtual.DelayedCall(_dodgeDelay, () =>
-        {
-            if (IsOnGround())
-            {
-                StopHitBoss();
-                ResetIdleTimer();
+        DOVirtual.DelayedCall(_dodgeDelay, () => Dodge());
+    }
 
-                TryJump();
-            }
-        });
+    public void DodgeSuperAttack()
+    {
+        if (IsDead()) return;
+
+        Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
+        if (IsWithinRadiusOfDestination(anticipateDestination)/* || IsOnRightOfDestination(anticipateDestination)*/)
+        {
+            Dodge(); // Dodge with no delay if already in anticipation
+        }
+        else
+        {
+            DOVirtual.DelayedCall(_dodgeDelay, () => Dodge());
+        }
     }
 
     // Triggered by Unity Event
@@ -155,6 +162,28 @@ public class Hero : MonoBehaviour
         CancelMovement();
     }
 
+    private void Dodge()
+    {
+        if (IsOnGround())
+        {
+            StopHitBoss();
+            ResetIdleTimer();
+
+            TryJump();
+        }
+    }
+
+    private void AnticipateAttack(Vector3 anticipateDestination)
+    {
+        if (IsDead()) return;
+
+        Debug.Log("Anticipate");
+
+        ResetIdleTimer();
+        StopHitBoss();
+
+        MoveToDestination(anticipateDestination);
+    }
     private void CancelMovement()
     {
         // Debug.Log("Cancel Movement");
@@ -172,11 +201,15 @@ public class Hero : MonoBehaviour
 
     private IEnumerator TryHitBossCoroutine()
     {
+        Debug.Log("moving...");
         yield return MoveToDestinationCoroutine(_attackBossDestination.position);
+        Debug.Log("done moving...");
 
         WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
         while (true)
         {
+            Debug.Log("swinging sword...");
+
             ResetIdleTimer();
             SwingSword();
             yield return waitForSeconds;
@@ -194,7 +227,10 @@ public class Hero : MonoBehaviour
     private void StopHitBoss()
     {
         if (_hitBossCoroutine != null)
+        {
+            Debug.Log("Stop Hit Boss");
             StopCoroutine(_hitBossCoroutine);
+        }
     }
 
     private void MoveToDestination(Vector3 destination)

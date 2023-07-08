@@ -12,7 +12,7 @@ public class KnockbackAction : MonoBehaviour
 
     private bool _isKnockbackApplied;
 
-    private void Awake()
+    private void OnEnable()
     {
         _isKnockbackApplied = false;
     }
@@ -24,11 +24,19 @@ public class KnockbackAction : MonoBehaviour
         if (other.TryGetComponent(out Knockback knockback))
         {
             _isKnockbackApplied = true;
-
-            Vector2 direction = _rigidbody.velocity.normalized;
-            direction += Vector2.up * _upwardTendency;
-
-            knockback.ApplyKnockback(_force * direction, _torque);
+            knockback.ApplyKnockback(_force * GetKnockbackDirection(), _torque);
         }
+    }
+
+    private Vector2 GetKnockbackDirection()
+    {
+        Vector2 direction = Vector2.right;
+
+        if (_rigidbody != null)
+            direction = _rigidbody.velocity.normalized;
+
+        direction += Vector2.up * _upwardTendency;
+
+        return direction;
     }
 }
