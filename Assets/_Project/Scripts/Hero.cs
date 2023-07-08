@@ -161,7 +161,7 @@ public class Hero : MonoBehaviour
     {
         Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
 
-        return (IsOnGround() && (IsWithinRadiusOfDestination(anticipateDestination)/* || IsOnRightOfDestination(anticipateDestination)*/));
+        return (IsOnGround() && (IsWithinRadiusOfDestination(anticipateDestination) || IsOnRightOfDestination(anticipateDestination)));
     }
 
     // Triggered by Unity Event

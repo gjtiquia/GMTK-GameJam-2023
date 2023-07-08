@@ -4206,14 +4206,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _initialplayerSatisfaction: 0
-  _maxPlayerSatisfaction: 500
-  _popupDuration: 3
-  _basicPairBonus: 10
-  _superPairBonus: 30
-  _noSuperAnticipationPenalty: 40
-  _tooQuickSuperAttackPenalty: 20
-  _noBasicAnticipationPenalty: 20
+  _maxPlayerSatisfaction: 600
+  _popupDuration: 2.5
+  _basicPairBonus: 20
+  _superPairBonus: 50
+  _damageBossBonus: 5
+  _noSuperAnticipationPenalty: 50
+  _tooQuickSuperAttackPenalty: 30
+  _noBasicAnticipationPenalty: 30
   _hero: {fileID: 1734874028}
+  _bossHealth: {fileID: 557981183}
   _satisfactionBar: {fileID: 2114128103}
   _penaltyUI: {fileID: 901297944}
   _penaltyText: {fileID: 1780022462}

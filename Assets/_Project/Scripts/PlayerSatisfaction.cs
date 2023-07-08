@@ -20,8 +20,7 @@ public enum BossAction
 
 // (----) Super Attack with no Anticipation
 // (---) Mixed Anticipation + Attack
-// (--) Super Anticipation + Super Attack but not ready to evade 
-// (--) Basic Attack with no Anticipation
+// (--) Super Anticipation + Super Attack but not ready to evade
 
 public class PlayerSatisfaction : MonoBehaviour
 {
@@ -33,15 +32,16 @@ public class PlayerSatisfaction : MonoBehaviour
     [Header("Bonus Settings")]
     [SerializeField] private int _basicPairBonus;
     [SerializeField] private int _superPairBonus;
+    [SerializeField] private int _damageBossBonus;
 
     [Header("Penalty Settings")]
     [SerializeField] private int _noSuperAnticipationPenalty;
     [SerializeField] private int _tooQuickSuperAttackPenalty;
-    [SerializeField] private int _noBasicAnticipationPenalty;
 
 
     [Header("References")]
     [SerializeField] private Hero _hero;
+    [SerializeField] private Health _bossHealth;
     [SerializeField] private Image _satisfactionBar;
     [SerializeField] private GameObject _penaltyUI;
     [SerializeField] private TextMeshProUGUI _penaltyText;
@@ -79,6 +79,11 @@ public class PlayerSatisfaction : MonoBehaviour
         ResetAllPopups();
     }
 
+    private void Start()
+    {
+        _bossHealth.OnNormalizedCurrentHPChangedCallback += (_) => OnBossDamaged();
+    }
+
     public void OnSuperAnticipation()
     {
         _superAnticipationCount++;
@@ -90,24 +95,22 @@ public class PlayerSatisfaction : MonoBehaviour
         _superAttackCount++;
 
         BossAction previousAction = _actionStack.Peek();
+        _actionStack.Push(BossAction.SuperAttack);
 
-        if (previousAction != BossAction.SuperAnticipation)
+        if (previousAction != BossAction.SuperAnticipation && !_hero.CanDodgeSuperAttack())
         {
-            _actionStack.Push(BossAction.SuperAttack);
             _currentPlayerSatisfaction -= _noSuperAnticipationPenalty;
 
             ShowPenaltyUI("Bruh");
             return;
         }
 
-        _actionStack.Pop();
-
         if (_hero.CanDodgeSuperAttack())
         {
             _currentPlayerSatisfaction += _superPairBonus;
             ShowBonusUI("Dodged Super Attack");
         }
-        else
+        else if (previousAction == BossAction.SuperAnticipation)
         {
             _currentPlayerSatisfaction -= _tooQuickSuperAttackPenalty;
             ShowPenaltyUI("Anticipation Too Short");
@@ -118,6 +121,7 @@ public class PlayerSatisfaction : MonoBehaviour
     {
         _basicAnticipationCount++;
         _actionStack.Push(BossAction.BasicAnticipation);
+
     }
 
     public void OnBasicAttack()
@@ -125,23 +129,18 @@ public class PlayerSatisfaction : MonoBehaviour
         _superAttackCount++;
 
         BossAction previousAction = _actionStack.Peek();
+        _actionStack.Push(BossAction.BasicAttack);
 
-        if (previousAction != BossAction.BasicAnticipation && !_hero.CanDodgeBasicAttack())
+        if (previousAction == BossAction.BasicAnticipation && _hero.CanDodgeBasicAttack())
         {
-            _actionStack.Push(BossAction.BasicAttack);
-            _currentPlayerSatisfaction -= _noBasicAnticipationPenalty;
-
-            ShowPenaltyUI("No anticipation before attack");
-            return;
-        }
-
-        _actionStack.Pop();
-
-        if (_hero.CanDodgeBasicAttack())
-        {
-            _currentPlayerSatisfaction += _superPairBonus;
+            _currentPlayerSatisfaction += _basicPairBonus;
             ShowBonusUI("Attack with Anticipation");
         }
+    }
+
+    private void OnBossDamaged()
+    {
+        _currentPlayerSatisfaction += _damageBossBonus;
     }
 
     private void UpdateUI()
