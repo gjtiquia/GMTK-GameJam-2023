@@ -6,7 +6,7 @@ public class DamageAction : MonoBehaviour
 
     private bool _isDamageApplied;
 
-    private void Awake()
+    private void OnEnable()
     {
         _isDamageApplied = false;
     }

@@ -17,6 +17,8 @@ public class Hero : MonoBehaviour
 
     [Header("Attack Boss Settings")]
     [SerializeField] private Transform _attackBossDestination;
+    [SerializeField] private GameObject _swordGameObject;
+    [SerializeField] private float _attackInterval;
 
     [Header("Basic Attack Settings")]
     [SerializeField] private Transform _basicAttackAnticipateDestination;
@@ -37,6 +39,7 @@ public class Hero : MonoBehaviour
 
     private void Awake()
     {
+        _swordGameObject.SetActive(false);
         _gravityScale = _rigidbody.gravityScale;
     }
 
@@ -118,13 +121,20 @@ public class Hero : MonoBehaviour
     {
         yield return MoveToDestinationCoroutine(_attackBossDestination.position);
 
-        const float ATTACK_INTERVAL = 2f;
-        WaitForSeconds waitForSeconds = new WaitForSeconds(ATTACK_INTERVAL);
+        WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
         while (true)
         {
-            Debug.Log("Hit!");
+            SwingSword();
             yield return waitForSeconds;
         }
+    }
+
+    private void SwingSword()
+    {
+        const float SWING_DISPLAY_TIME = 0.4f;
+
+        _swordGameObject.SetActive(true);
+        DOVirtual.DelayedCall(SWING_DISPLAY_TIME, () => _swordGameObject.SetActive(false));
     }
 
     private void StopHitBoss()
