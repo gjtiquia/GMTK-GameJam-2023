@@ -31,11 +31,13 @@ public class PlayerSatisfaction : MonoBehaviour
     [SerializeField] private float _popupDuration;
 
     [Header("Bonus Settings")]
+    [SerializeField] private int _basicPairBonus;
     [SerializeField] private int _superPairBonus;
 
     [Header("Penalty Settings")]
     [SerializeField] private int _noSuperAnticipationPenalty;
     [SerializeField] private int _tooQuickSuperAttackPenalty;
+    [SerializeField] private int _noBasicAnticipationPenalty;
 
 
     [Header("References")]
@@ -56,6 +58,9 @@ public class PlayerSatisfaction : MonoBehaviour
         }
     }
     private int m_currentPlayerSatisfaction;
+
+    private int _basicAnticipationCount = 0;
+    private int _basicAttackCount = 0;
 
     private int _superAnticipationCount = 0;
     private int _superAttackCount = 0;
@@ -106,6 +111,36 @@ public class PlayerSatisfaction : MonoBehaviour
         {
             _currentPlayerSatisfaction -= _tooQuickSuperAttackPenalty;
             ShowPenaltyUI("Anticipation Too Short");
+        }
+    }
+
+    public void OnBasicAnticipation()
+    {
+        _basicAnticipationCount++;
+        _actionStack.Push(BossAction.BasicAnticipation);
+    }
+
+    public void OnBasicAttack()
+    {
+        _superAttackCount++;
+
+        BossAction previousAction = _actionStack.Peek();
+
+        if (previousAction != BossAction.BasicAnticipation && !_hero.CanDodgeBasicAttack())
+        {
+            _actionStack.Push(BossAction.BasicAttack);
+            _currentPlayerSatisfaction -= _noBasicAnticipationPenalty;
+
+            ShowPenaltyUI("No anticipation before attack");
+            return;
+        }
+
+        _actionStack.Pop();
+
+        if (_hero.CanDodgeBasicAttack())
+        {
+            _currentPlayerSatisfaction += _superPairBonus;
+            ShowBonusUI("Attack with Anticipation");
         }
     }
 

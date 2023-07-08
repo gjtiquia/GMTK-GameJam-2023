@@ -150,6 +150,13 @@ public class Hero : MonoBehaviour
             DOVirtual.DelayedCall(_dodgeDelay, () => Dodge());
     }
 
+    public bool CanDodgeBasicAttack()
+    {
+        Vector3 anticipateDestination = _basicAttackAnticipateDestination.position;
+
+        return (IsOnGround() && (IsWithinRadiusOfDestination(anticipateDestination) || IsOnRightOfDestination(anticipateDestination)));
+    }
+
     public bool CanDodgeSuperAttack()
     {
         Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
@@ -160,6 +167,7 @@ public class Hero : MonoBehaviour
     // Triggered by Unity Event
     public void OnHitByProjectile()
     {
+        StopMoveToDestination();
         StopHitBoss();
         CancelMovement();
     }
@@ -184,6 +192,7 @@ public class Hero : MonoBehaviour
 
         MoveToDestination(anticipateDestination);
     }
+
     private void CancelMovement()
     {
         _moveInput = 0;
@@ -226,10 +235,15 @@ public class Hero : MonoBehaviour
         }
     }
 
-    private void MoveToDestination(Vector3 destination)
+    private void StopMoveToDestination()
     {
         if (_movementCoroutine != null)
             StopCoroutine(_movementCoroutine);
+    }
+
+    private void MoveToDestination(Vector3 destination)
+    {
+        StopMoveToDestination();
 
         _movementCoroutine = MoveToDestinationCoroutine(destination);
         StartCoroutine(_movementCoroutine);
