@@ -86,6 +86,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _force: 20
+  _torque: -0.5
   _upwardTendency: 0.35
   _rigidbody: {fileID: 8598813023811867142}
 --- !u!1 &8598813022783417430

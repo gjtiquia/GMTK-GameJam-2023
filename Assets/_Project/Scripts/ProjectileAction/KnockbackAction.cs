@@ -4,6 +4,7 @@ public class KnockbackAction : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float _force;
+    [SerializeField] private float _torque;
     [SerializeField, Range(0, 1)] private float _upwardTendency = 0;
 
     [Header("References")]
@@ -27,7 +28,7 @@ public class KnockbackAction : MonoBehaviour
             Vector2 direction = _rigidbody.velocity.normalized;
             direction += Vector2.up * _upwardTendency;
 
-            knockback.ApplyKnockback(_force * direction);
+            knockback.ApplyKnockback(_force * direction, _torque);
         }
     }
 }
