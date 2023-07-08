@@ -2552,6 +2552,7 @@ MonoBehaviour:
   _topSpeed: 7
   _acceleration: 5
   _destinationRadius: 0.7
+  _friction: 0.2
   _attackBossDestination: {fileID: 1763147890}
   _swordGameObject: {fileID: 1041745273}
   _attackInterval: 0.7

@@ -14,6 +14,7 @@ public class Hero : MonoBehaviour
     [SerializeField] private float _topSpeed;
     [SerializeField] private float _acceleration;
     [SerializeField] private float _destinationRadius;
+    [SerializeField] private float _friction;
 
     [Header("Attack Boss Settings")]
     [SerializeField] private Transform _attackBossDestination;
@@ -100,9 +101,12 @@ public class Hero : MonoBehaviour
             float movement = velocityDiff * acceleration;
             _rigidbody.AddForce(movement * Vector2.right);
         }
-        else
+        else if (_moveInput == 0 && IsOnGround())
         {
-
+            float movingDirection = Mathf.Sign(_rigidbody.velocity.x);
+            float frictionAmount = Mathf.Min(_friction, Mathf.Abs(_rigidbody.velocity.x));
+            float friction = -1 * movingDirection * frictionAmount;
+            _rigidbody.AddForce(friction * Vector2.right, ForceMode2D.Impulse);
         }
 
         if (_jumpInput && IsOnGround())
