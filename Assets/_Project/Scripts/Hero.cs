@@ -144,15 +144,17 @@ public class Hero : MonoBehaviour
     {
         if (IsDead()) return;
 
-        Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
-        if (IsWithinRadiusOfDestination(anticipateDestination)/* || IsOnRightOfDestination(anticipateDestination)*/)
-        {
-            Dodge(); // Dodge with no delay if already in anticipation
-        }
+        if (CanDodgeSuperAttack())
+            Dodge();
         else
-        {
             DOVirtual.DelayedCall(_dodgeDelay, () => Dodge());
-        }
+    }
+
+    public bool CanDodgeSuperAttack()
+    {
+        Vector3 anticipateDestination = _superAttackAnticipateDestination.position;
+
+        return (IsOnGround() && (IsWithinRadiusOfDestination(anticipateDestination)/* || IsOnRightOfDestination(anticipateDestination)*/));
     }
 
     // Triggered by Unity Event
@@ -177,8 +179,6 @@ public class Hero : MonoBehaviour
     {
         if (IsDead()) return;
 
-        Debug.Log("Anticipate");
-
         ResetIdleTimer();
         StopHitBoss();
 
@@ -186,8 +186,6 @@ public class Hero : MonoBehaviour
     }
     private void CancelMovement()
     {
-        // Debug.Log("Cancel Movement");
-
         _moveInput = 0;
     }
 
@@ -201,15 +199,11 @@ public class Hero : MonoBehaviour
 
     private IEnumerator TryHitBossCoroutine()
     {
-        Debug.Log("moving...");
         yield return MoveToDestinationCoroutine(_attackBossDestination.position);
-        Debug.Log("done moving...");
 
         WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
         while (true)
         {
-            Debug.Log("swinging sword...");
-
             ResetIdleTimer();
             SwingSword();
             yield return waitForSeconds;
@@ -228,7 +222,6 @@ public class Hero : MonoBehaviour
     {
         if (_hitBossCoroutine != null)
         {
-            Debug.Log("Stop Hit Boss");
             StopCoroutine(_hitBossCoroutine);
         }
     }
