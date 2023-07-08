@@ -19,8 +19,10 @@ public class Hero : MonoBehaviour
     [SerializeField] private Transform _attackBossDestination;
     [SerializeField] private GameObject _swordGameObject;
     [SerializeField] private float _attackInterval;
+    [SerializeField] private float _maxIdleTime;
 
     [Header("Basic Attack Settings")]
+    [SerializeField] private float _dodgeDelay;
     [SerializeField] private Transform _basicAttackAnticipateDestination;
 
     [Header("On Ground Hitbox Settings")]
@@ -36,6 +38,7 @@ public class Hero : MonoBehaviour
     private bool _jumpInput = false;
     private IEnumerator _movementCoroutine = null;
     private IEnumerator _hitBossCoroutine = null;
+    private float _startIdleTime;
 
     private void Awake()
     {
@@ -56,6 +59,32 @@ public class Hero : MonoBehaviour
         _health.OnDeathCallback -= OnDeath;
     }
 
+    private void Update()
+    {
+        if (_rigidbody.velocity != Vector2.zero)
+        {
+            ResetIdleTimer();
+            return;
+        }
+
+        if (IsOverMaxIdleTime())
+        {
+            ResetIdleTimer();
+            TryHitBoss();
+        }
+    }
+
+    private void ResetIdleTimer()
+    {
+        _startIdleTime = Time.time;
+    }
+
+    private bool IsOverMaxIdleTime()
+    {
+        float elapsedTime = Time.time - _startIdleTime;
+        return elapsedTime > _maxIdleTime;
+    }
+
     private void FixedUpdate()
     {
         if (IsDead()) return;
@@ -70,6 +99,10 @@ public class Hero : MonoBehaviour
             float acceleration = _acceleration;
             float movement = velocityDiff * acceleration;
             _rigidbody.AddForce(movement * Vector2.right);
+        }
+        else
+        {
+
         }
 
         if (_jumpInput && IsOnGround())
@@ -87,7 +120,9 @@ public class Hero : MonoBehaviour
     public void AnticipateBasicAttack()
     {
         if (IsDead()) return;
+
         StopHitBoss();
+        ResetIdleTimer();
 
         Vector3 anticipateDestination = _basicAttackAnticipateDestination.position;
         MoveToDestination(anticipateDestination);
@@ -95,14 +130,28 @@ public class Hero : MonoBehaviour
 
     public void DodgeBasicAttack()
     {
-        if (IsOnGround())
+        if (IsDead()) return;
+
+        DOVirtual.DelayedCall(_dodgeDelay, () =>
         {
-            StopHitBoss();
-            TryJump();
-        }
+            if (IsOnGround())
+            {
+                StopHitBoss();
+                ResetIdleTimer();
+
+                TryJump();
+            }
+        });
     }
 
-    public void CancelMovement()
+    // Triggered by Unity Event
+    public void OnHitByProjectile()
+    {
+        StopHitBoss();
+        CancelMovement();
+    }
+
+    private void CancelMovement()
     {
         // Debug.Log("Cancel Movement");
 
@@ -124,6 +173,7 @@ public class Hero : MonoBehaviour
         WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
         while (true)
         {
+            ResetIdleTimer();
             SwingSword();
             yield return waitForSeconds;
         }
@@ -131,7 +181,7 @@ public class Hero : MonoBehaviour
 
     private void SwingSword()
     {
-        const float SWING_DISPLAY_TIME = 0.4f;
+        const float SWING_DISPLAY_TIME = 0.3f;
 
         _swordGameObject.SetActive(true);
         DOVirtual.DelayedCall(SWING_DISPLAY_TIME, () => _swordGameObject.SetActive(false));

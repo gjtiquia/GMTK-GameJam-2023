@@ -637,7 +637,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1734874028}
         m_TargetAssemblyTypeName: Hero, Assembly-CSharp
-        m_MethodName: CancelMovement
+        m_MethodName: OnHitByProjectile
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1053,7 +1053,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 621957919}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.17, y: -3.07, z: 0}
+  m_LocalPosition: {x: 4.18, y: -3.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2551,10 +2551,12 @@ MonoBehaviour:
   _fallGravityMultiplier: 2.5
   _topSpeed: 7
   _acceleration: 5
-  _destinationRadius: 1
+  _destinationRadius: 0.7
   _attackBossDestination: {fileID: 1763147890}
   _swordGameObject: {fileID: 1041745273}
-  _attackInterval: 1
+  _attackInterval: 0.7
+  _maxIdleTime: 0.8
+  _dodgeDelay: 0.08
   _basicAttackAnticipateDestination: {fileID: 621957920}
   _boxExtents: {x: 0.71, y: 0.16}
   _boxOffset: {x: 0, y: -0.64}
