@@ -36,6 +36,7 @@ public class Hero : MonoBehaviour
     [Header("References")]
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Health _health;
+    [SerializeField] private GameObject _heroDiedPopup;
 
     private float _gravityScale;
     private int _moveInput = 0; // 1 => Right, -1 => Left
@@ -46,6 +47,7 @@ public class Hero : MonoBehaviour
 
     private void Awake()
     {
+        _heroDiedPopup.SetActive(false);
         _swordGameObject.SetActive(false);
         _gravityScale = _rigidbody.gravityScale;
     }
@@ -53,6 +55,7 @@ public class Hero : MonoBehaviour
     private void Start()
     {
         _health.OnDeathCallback += OnDeath;
+
     }
 
     private void OnDestroy()
@@ -68,11 +71,23 @@ public class Hero : MonoBehaviour
             return;
         }
 
-        if (IsOverMaxIdleTime())
+        if (!IsOverMaxIdleTime()) return;
+
+        if (IsDead())
         {
-            ResetIdleTimer();
-            TryHitBoss();
+            ShowHeroDiedPopup();
+            return;
         }
+
+        ResetIdleTimer();
+        TryHitBoss();
+    }
+
+    private void ShowHeroDiedPopup()
+    {
+        // TODO : Checking if the popup is already showing
+
+        _heroDiedPopup.SetActive(true);
     }
 
     private void ResetIdleTimer()
