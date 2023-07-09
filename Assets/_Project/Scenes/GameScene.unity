@@ -4201,6 +4201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1259512273}
+  - component: {fileID: 1259512274}
   m_Layer: 0
   m_Name: Display
   m_TagString: Untagged
@@ -4226,6 +4227,26 @@ Transform:
   m_Father: {fileID: 1522173673}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1259512274
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259512272}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 337e44b285df2d647acb8c8cc1b0e114, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1260429412
 GameObject:
   m_ObjectHideFlags: 0
@@ -4274,7 +4295,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1300313055
 Transform:
   m_ObjectHideFlags: 0
@@ -5107,6 +5128,7 @@ MonoBehaviour:
   _superAttackPowerupDuration: 0.19
   _superAttackDuration: 0.7
   _disableAttack: 0
+  _animator: {fileID: 1259512274}
   _health: {fileID: 557981183}
   _bossDiedPopup: {fileID: 1749695925}
   _firePosition: {fileID: 783297763}
@@ -5431,6 +5453,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1977315104}
         m_TargetAssemblyTypeName: PlayerSatisfaction, Assembly-CSharp
         m_MethodName: OnBasicAnticipation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1522173675}
+        m_TargetAssemblyTypeName: Boss, Assembly-CSharp
+        m_MethodName: BasicAnticipation
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6167,7 +6201,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1692383232
 Transform:
   m_ObjectHideFlags: 0

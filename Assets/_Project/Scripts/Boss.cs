@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class Boss : MonoBehaviour
 {
+    const float ANIMATOR_BOOL_DELAY = 0.3f;
+
     [Header("Settings")]
     [SerializeField] private Vector2 _fireVelocity;
     [SerializeField] private float _superAttackPowerupDuration;
@@ -14,6 +16,7 @@ public class Boss : MonoBehaviour
     [SerializeField] private bool _disableAttack;
 
     [Header("References")]
+    [SerializeField] private Animator _animator;
     [SerializeField] private Health _health;
     [SerializeField] private GameObject _bossDiedPopup;
     [SerializeField] private Transform _firePosition;
@@ -33,10 +36,19 @@ public class Boss : MonoBehaviour
         _health.OnDeathCallback += () => _bossDiedPopup.SetActive(true);
     }
 
+    public void BasicAnticipation()
+    {
+        _animator.SetBool("IsBasicAnticipation", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsBasicAnticipation", false));
+    }
+
     public void Fire()
     {
         if (_disableAttack)
             return;
+
+        _animator.SetBool("IsBasicFire", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsBasicFire", false));
 
         GameObject projectileInstance = Instantiate(_projectilePrefab, _firePosition.position, Quaternion.identity);
         if (projectileInstance.TryGetComponent(out Rigidbody2D rigidbody))
