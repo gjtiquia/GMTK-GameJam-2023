@@ -61,10 +61,19 @@ public class Boss : MonoBehaviour
         // DOVirtual.DelayedCall(5, () => Destroy(projectileInstance));
     }
 
+    public void SuperAnticipation()
+    {
+        _animator.SetBool("IsSuperAnticipation", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsSuperAnticipation", false));
+    }
+
     public void Super()
     {
         if (_disableAttack)
             return;
+
+        _animator.SetBool("IsSuperFire", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsSuperFire", false));
 
         _superAttackInstance.SetActive(false);
 
