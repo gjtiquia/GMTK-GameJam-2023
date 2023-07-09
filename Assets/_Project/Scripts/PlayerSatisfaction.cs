@@ -104,7 +104,7 @@ public class PlayerSatisfaction : MonoBehaviour
         {
             _currentPlayerSatisfaction -= _noSuperAnticipationPenalty;
 
-            ShowPenaltyUI("Bruh");
+            ShowPenaltyUI("Lmaooooooo");
             return;
         }
 
