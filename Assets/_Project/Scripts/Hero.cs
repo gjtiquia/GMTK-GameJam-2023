@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class Hero : MonoBehaviour
 {
+    const float ANIMATOR_BOOL_DELAY = 0.3f;
+
     public Health Health => _health;
 
     [Header("Jump Settings")]
@@ -36,6 +38,7 @@ public class Hero : MonoBehaviour
     [SerializeField] private Vector2 _boxOffset;
 
     [Header("References")]
+    [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private Health _health;
     [SerializeField] private Health _bossHealth;
@@ -185,6 +188,9 @@ public class Hero : MonoBehaviour
     // Triggered by Unity Event
     public void OnHitByProjectile()
     {
+        _animator.SetBool("IsHurt", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsHurt", false));
+
         StopMoveToDestination();
         StopHitBoss();
         CancelMovement();
@@ -194,6 +200,10 @@ public class Hero : MonoBehaviour
     {
         if (IsOnGround())
         {
+            // TODO : Polish - Replace with jump animation
+            _animator.SetBool("IsRun", true);
+            DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsRun", false));
+
             StopHitBoss();
             ResetIdleTimer();
 
@@ -226,7 +236,8 @@ public class Hero : MonoBehaviour
 
     private IEnumerator TryHitBossCoroutine()
     {
-        yield return MoveToDestinationCoroutine(_attackBossDestination.position);
+        Vector3 destination = _attackBossDestination.position;
+        yield return MoveToDestinationCoroutine(destination);
 
         WaitForSeconds waitForSeconds = new WaitForSeconds(_attackInterval);
         while (!_bossHealth.IsDead())
@@ -242,7 +253,13 @@ public class Hero : MonoBehaviour
         const float SWING_DISPLAY_TIME = 0.3f;
 
         _swordGameObject.SetActive(true);
-        DOVirtual.DelayedCall(SWING_DISPLAY_TIME, () => _swordGameObject.SetActive(false));
+        _animator.SetBool("IsAttack", true);
+
+        DOVirtual.DelayedCall(SWING_DISPLAY_TIME, () =>
+        {
+            _swordGameObject.SetActive(false);
+            _animator.SetBool("IsAttack", false);
+        });
     }
 
     private void StopHitBoss()
@@ -269,6 +286,9 @@ public class Hero : MonoBehaviour
 
     private IEnumerator MoveToDestinationCoroutine(Vector3 destination)
     {
+        _animator.SetBool("IsRun", true);
+        DOVirtual.DelayedCall(ANIMATOR_BOOL_DELAY, () => _animator.SetBool("IsRun", false));
+
         while (!IsWithinRadiusOfDestination(destination))
         {
             if (IsOnLeftOfDestination(destination))
@@ -344,7 +364,7 @@ public class Hero : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
+        Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, _destinationRadius);
 
         Gizmos.color = Color.red;
