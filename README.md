@@ -3,7 +3,7 @@
 Play the game here: https://gjthegamedev.itch.io/hero-reversed
 
 It's a boss fight, but the roles are reversed. You are the boss, and the hero is here to fight you.
-2
+
 Will you give the player a good time? Or will you just have fun and bully the hero?
 
 Inspired by the fact that enemy AI is desgined to favour players and give them a good "player satisfaction". Game balance is crucial for players to enjoy any game. Also a great reminder that enemies in game can be really OP, it's just that they restrain themselves from one-shotting you so that you can have fun :)
